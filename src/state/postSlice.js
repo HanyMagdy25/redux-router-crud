@@ -1,0 +1,78 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
+const initialState = { records: [], loading: false, error: null };
+
+export const fetchPosts = createAsyncThunk(
+  "posts/fetchPosts",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res = await fetch("http://localhost:8000/posts");
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  "posts/deletePosts",
+  async (id, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      await fetch(`http://localhost:8000/posts/${id}`, {
+        method: "DELETE",
+      });
+
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+const postSlice = createSlice({
+  name: "posts",
+  initialState,
+  reducers: {},
+  extraReducers: {
+    // fetch posts
+    [fetchPosts.pending]: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    [fetchPosts.fulfilled]: (state, action) => {
+      state.loading = false;
+      state.records = action.payload;
+      // ممكن تعمل الطريقة دى او دى
+      // state.records.push(...action.payload)
+      // console.log(action.payload)
+    },
+    [fetchPosts.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    // create post
+
+    // delete post
+    [deletePost.pending]: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    [deletePost.fulfilled]: (state, action) => {
+      state.loading = false;
+      state.records = state.records.filter((el) => el.id !== action.payload);
+      // ممكن تعمل الطريقة دى او دى
+      // state.records.push(...action.payload)
+      // console.log(action.payload)
+    },
+    [deletePost.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    // edit post
+  },
+});
+
+export default postSlice.reducer;
