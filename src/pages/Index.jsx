@@ -23,7 +23,7 @@ export default function Index() {
 
   return (
     <Loading loading={loading} error={error}>
-      <PostList data={records} deleteRecord={deleteRecord}/>
+      <PostList data={records} deleteRecord={deleteRecord} />
     </Loading>
   );
 }

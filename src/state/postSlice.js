@@ -15,7 +15,6 @@ export const fetchPosts = createAsyncThunk(
     }
   }
 );
-
 export const deletePost = createAsyncThunk(
   "posts/deletePosts",
   async (id, thunkAPI) => {
@@ -31,13 +30,35 @@ export const deletePost = createAsyncThunk(
     }
   }
 );
+export const insertPost = createAsyncThunk(
+  "posts/insertPosts",
+  async (item, thunkAPI) => {
+    const { rejectWithValue, getState } = thunkAPI;
+    const { auth } = getState();
+    // when you create new post . this will create userId
+    item.userId = auth.id;
+    try {
+      const res = await fetch("http://localhost:8000/posts", {
+        method: "POST",
+        body: JSON.stringify(item),
+        headers: {
+          "Content-Type": "application/json ; charset=UTF-8",
+        },
+      });
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const postSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {},
   extraReducers: {
-    // fetch posts
+    // ******* fetch posts *******
     [fetchPosts.pending]: (state) => {
       state.loading = true;
       state.error = null;
@@ -53,7 +74,20 @@ const postSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    // create post
+    // ****** create post  *******
+
+    [insertPost.pending]: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    [insertPost.fulfilled]: (state, action) => {
+      state.loading = false;
+      state.records.push(action.payload);
+    },
+    [insertPost.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
 
     // delete post
     [deletePost.pending]: (state) => {
