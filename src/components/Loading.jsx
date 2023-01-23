@@ -1,7 +1,7 @@
 import { cloneElement } from "react";
 
 export default function Loading({ children, loading, error }) {
-  const elementType = children.type.render.displayName;
+  const elementType = children?.type?.render?.displayName;
   const renderHandler = () => {
     if (elementType === "Button") {
       const cloneButton = cloneElement(

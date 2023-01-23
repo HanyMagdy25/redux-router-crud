@@ -1,7 +1,9 @@
-import React from 'react'
+
+import usePostDetails from "../hooks/use-post-details";
 
 export default function Details() {
-  return (
-    <div>Details</div>
-  )
+
+  const { loading, error, record } = usePostDetails();
+
+  return <div>Details</div>;
 }
